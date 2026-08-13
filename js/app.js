@@ -85,10 +85,36 @@ muteBtn.addEventListener('click', async () => {
   await audio.resume();
 });
 
+let searchQuery = '';
+
+const searchInput = document.getElementById('pack-search');
+const menuBtn = document.getElementById('btn-menu');
+const backdrop = document.getElementById('nav-backdrop');
+
+function closeNav() { document.body.classList.remove('nav-open'); }
+menuBtn?.addEventListener('click', () => {
+  document.body.classList.toggle('nav-open');
+});
+backdrop?.addEventListener('click', closeNav);
+document.querySelectorAll('.sidenav-nav a, .logo').forEach((el) => {
+  el.addEventListener('click', closeNav);
+});
+searchInput?.addEventListener('input', () => {
+  searchQuery = searchInput.value;
+  const parts = (location.hash.replace(/^#/, '') || '/').split('/').filter(Boolean);
+  if (!parts.length) renderHome();
+});
+searchInput?.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  const parts = (location.hash.replace(/^#/, '') || '/').split('/').filter(Boolean);
+  if (parts.length) location.hash = '#/';
+});
+
 function route() {
   const h = (location.hash.replace(/^#/, '') || '/');
   const parts = h.split('/').filter(Boolean);
-  document.querySelectorAll('.nav-pills a').forEach((a) => a.classList.remove('active'));
+  document.body.classList.remove('nav-open');
+  document.querySelectorAll('.sidenav-nav a').forEach((a) => a.classList.remove('active'));
   if (!parts.length) {
     document.querySelector('[data-nav="packs"]')?.classList.add('active');
     return renderHome();
@@ -112,10 +138,12 @@ function route() {
 function packCard(p) {
   return `<a class="pack-card" href="#/pack/${p.id}">
     <div class="pack-card-art">
-      <div class="pack-card-name">${esc(p.name)}</div>
       <img src="${p.artFile}" alt="${esc(p.name)} pack" />
     </div>
-    <div class="pack-card-price">${formatMoney(p.price)}</div>
+    <div class="pack-card-meta">
+      <div class="pack-card-name">${esc(p.name)}</div>
+      <div class="pack-card-price">${formatMoney(p.price)}</div>
+    </div>
   </a>`;
 }
 
@@ -133,13 +161,13 @@ function liveCard(ev) {
 
 function sidebarHTML() {
   const top = [...live].sort((a, b) => b.value - a.value).slice(0, 4);
-  return `<aside class="sidebar">
+  return `<aside class="live-rail">
     <div class="side-panel">
       <h3>Top Opens</h3>
       <div class="live-list">${top.map(liveCard).join('') || '<div class="live-name">Waiting on heat…</div>'}</div>
     </div>
     <div class="side-panel">
-      <h3>Live Opens</h3>
+      <h3><span class="live-dot" aria-hidden="true"></span> Live Opens</h3>
       <div class="live-list" id="live-list">${live.map(liveCard).join('')}</div>
     </div>
   </aside>`;
@@ -148,19 +176,33 @@ function sidebarHTML() {
 function renderHome() {
   spinning = false;
   pending = null;
-  const packs = filter === 'all' ? PACKS : PACKS.filter((p) => p.category === filter);
-  app.innerHTML = `<div class="layout">
-    <div>
-      <div class="page-head">
-        <div>
-          <h1>Packs</h1>
-          <p>Open packs. Pull heat. Demo balance, fictional prizes.</p>
+  const q = searchQuery.trim().toLowerCase();
+  let packs = filter === 'all' ? PACKS : PACKS.filter((p) => p.category === filter);
+  if (q) {
+    packs = packs.filter((p) =>
+      p.name.toLowerCase().includes(q) || (p.blurb && p.blurb.toLowerCase().includes(q))
+    );
+  }
+  const featured = PACKS.find((p) => p.id === 'apex-keys') || PACKS[0];
+  const hero = q ? '' : `<a class="hero-strip" href="#/pack/${featured.id}">
+        <div class="hero-art"><img src="${featured.artFile}" alt="${esc(featured.name)}" /></div>
+        <div class="hero-copy">
+          <div class="hero-kicker">Featured drop</div>
+          <h2>${esc(featured.name)}</h2>
+          <p>${esc(featured.blurb)}</p>
+          <span class="hero-cta">Open from ${formatMoney(featured.price)}</span>
         </div>
+      </a>`;
+  app.innerHTML = `<div class="layout">
+    <div class="lobby">
+      ${hero}
+      <div class="section-head">
+        <h1>Featured Packs</h1>
       </div>
       <div class="filters">
         ${CATEGORIES.map((c) => `<button class="chip${filter === c.id ? ' active' : ''}" data-filter="${c.id}" type="button">${c.label}</button>`).join('')}
       </div>
-      <div class="pack-grid">${packs.map(packCard).join('')}</div>
+      <div class="pack-grid">${packs.map(packCard).join('') || '<div class="empty"><h3>No packs match</h3><p>Try another search.</p></div>'}</div>
     </div>
     ${sidebarHTML()}
   </div>`;

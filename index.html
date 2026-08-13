@@ -5,44 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AETHER — Open packs. Pull heat.</title>
   <meta name="description" content="AETHER is a demo mystery-pack opening experience. Fake balance. No real money. No accounts." />
+  <meta name="theme-color" content="#7717ff" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231d2125'/><path d='M16 4 28 16 16 28 4 16Z' fill='%233ecf8e'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080808'/><path d='M16 4 28 16 16 28 4 16Z' fill='%237717ff'/></svg>" />
 </head>
 <body>
-  <div class="demo-banner">Demo · fake balance · <span>no real money</span></div>
+  <div class="nav-backdrop" id="nav-backdrop"></div>
 
-  <header class="nav">
-    <a class="logo" href="#/" aria-label="AETHER home">
-      <span class="logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 32 32" fill="none"><path d="M16 3.5 28.5 16 16 28.5 3.5 16 16 3.5Z" stroke="#3ecf8e" stroke-width="2"/><path d="M16 10 22 16 16 22 10 16 16 10Z" fill="#3ecf8e"/></svg>
-      </span>
-      <span class="word">AETHER</span>
-    </a>
-    <nav class="nav-pills" aria-label="Primary">
-      <a href="#/" data-nav="packs">Packs</a>
-      <a href="#/inventory" data-nav="inventory">Inventory</a>
-      <a href="#/fairness" data-nav="fairness">Fairness</a>
+  <aside class="sidenav" id="sidenav">
+    <div class="sidenav-head">
+      <a class="logo" href="#/" aria-label="AETHER home">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M16 3.5 28.5 16 16 28.5 3.5 16 16 3.5Z" fill="#7717ff"/><path d="M16 11 21 16 16 21 11 16 16 11Z" fill="#080808"/></svg>
+        </span>
+        <span class="word">AETHER</span>
+      </a>
+    </div>
+    <nav class="sidenav-nav" aria-label="Primary">
+      <a href="#/" data-nav="packs">
+        <span class="nav-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.2"/><rect x="14" y="3" width="7" height="7" rx="1.2"/><rect x="3" y="14" width="7" height="7" rx="1.2"/><rect x="14" y="14" width="7" height="7" rx="1.2"/></svg>
+        </span>
+        Packs
+      </a>
+      <a href="#/inventory" data-nav="inventory">
+        <span class="nav-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
+        </span>
+        Inventory
+      </a>
+      <a href="#/fairness" data-nav="fairness">
+        <span class="nav-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7v6c0 5-3.4 7.7-8 9-4.6-1.3-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+        </span>
+        Fairness
+      </a>
     </nav>
-    <div class="nav-right">
-      <button class="icon-btn" id="btn-mute" type="button" aria-label="Toggle mute" title="Mute"></button>
-      <div class="balance-chip" id="balance-chip" title="Demo balance">
-        <span class="dot" aria-hidden="true"></span>
-        <span id="balance-val">$2,500.00</span>
+    <div class="sidenav-foot">
+      <div class="demo-note">Demo · fake balance</div>
+      <div class="demo-note dim">No real money · no accounts</div>
+    </div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <button class="icon-btn hamburger" id="btn-menu" type="button" aria-label="Open menu" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <label class="search-field">
+        <span class="search-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </span>
+        <input type="search" id="pack-search" placeholder="Search packs" autocomplete="off" />
+      </label>
+      <div class="topbar-right">
+        <button class="icon-btn" id="btn-mute" type="button" aria-label="Toggle mute" title="Mute"></button>
+        <div class="wallet-chip" id="balance-chip" title="Demo balance">
+          <span class="wallet-bal" id="balance-val">$2,500.00</span>
+          <span class="wallet-cta">Wallet</span>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <div id="app"></div>
-
-  <footer class="site-foot">
-    <div class="inner">
-      <div><strong>AETHER</strong> · Open packs. Pull heat.</div>
-      <div>Demo only · fictional prizes · no payments · no accounts</div>
-    </div>
-  </footer>
+    <main class="workspace">
+      <div id="app"></div>
+      <footer class="site-foot">
+        <div class="inner">
+          <div><strong>AETHER</strong> · Open packs. Pull heat.</div>
+          <div>Demo only · fictional prizes · no payments · no accounts</div>
+        </div>
+      </footer>
+    </main>
+  </div>
 
   <canvas class="fx-canvas" id="fx"></canvas>
   <div class="screen-flash" id="flash"></div>
