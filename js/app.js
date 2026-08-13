@@ -91,13 +91,24 @@ const searchInput = document.getElementById('pack-search');
 const menuBtn = document.getElementById('btn-menu');
 const backdrop = document.getElementById('nav-backdrop');
 
-function closeNav() { document.body.classList.remove('nav-open'); }
+function setNavOpen(open) {
+  document.body.classList.toggle('nav-open', open);
+  if (backdrop) backdrop.hidden = !open;
+  if (menuBtn) {
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+}
+function closeNav() { setNavOpen(false); }
 menuBtn?.addEventListener('click', () => {
-  document.body.classList.toggle('nav-open');
+  setNavOpen(!document.body.classList.contains('nav-open'));
 });
 backdrop?.addEventListener('click', closeNav);
 document.querySelectorAll('.sidenav-nav a, .logo').forEach((el) => {
   el.addEventListener('click', closeNav);
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeNav();
 });
 searchInput?.addEventListener('input', () => {
   searchQuery = searchInput.value;
@@ -113,7 +124,7 @@ searchInput?.addEventListener('keydown', (e) => {
 function route() {
   const h = (location.hash.replace(/^#/, '') || '/');
   const parts = h.split('/').filter(Boolean);
-  document.body.classList.remove('nav-open');
+  closeNav();
   document.querySelectorAll('.sidenav-nav a').forEach((a) => a.classList.remove('active'));
   if (!parts.length) {
     document.querySelector('[data-nav="packs"]')?.classList.add('active');
@@ -179,9 +190,7 @@ function renderHome() {
   const q = searchQuery.trim().toLowerCase();
   let packs = filter === 'all' ? PACKS : PACKS.filter((p) => p.category === filter);
   if (q) {
-    packs = packs.filter((p) =>
-      p.name.toLowerCase().includes(q) || (p.blurb && p.blurb.toLowerCase().includes(q))
-    );
+    packs = packs.filter((p) => p.name.toLowerCase().includes(q));
   }
   const featured = PACKS.find((p) => p.id === 'apex-keys') || PACKS[0];
   const hero = q ? '' : `<a class="hero-strip" href="#/pack/${featured.id}">
